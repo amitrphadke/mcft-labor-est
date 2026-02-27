@@ -1,6 +1,6 @@
 import React from 'react';
-import FileUpload from './FileUpload';
-import ChecklistItem from './ChecklistItem';
+import FileUpload from '../FileUpload';
+import ChecklistItem from '../ChecklistItem';
 
 const checklistItems = [
   {

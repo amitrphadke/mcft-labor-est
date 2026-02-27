@@ -8,11 +8,11 @@ const initialOperations = [
   { name: 'Trimming', role: 'C+H', time: 0, startTime: '08:00' },
 ];
 
-export default function OperationTable({ data, config }: { data: any[], config: any }) {
+export default function OperationTable({ data, config, sheetCount }: { data: any[], config: any, sheetCount?: number }) {
   const [operations, setOperations] = useState(initialOperations);
 
   useEffect(() => {
-    if (data.length > 0 && config) {
+    if (data && data.length > 0 && config.pasting) {
       const newOps = JSON.parse(JSON.stringify(initialOperations));
 
       const edgeBandingParts = data.filter((row: any) => {
@@ -50,8 +50,30 @@ export default function OperationTable({ data, config }: { data: any[], config: 
       });
 
       setOperations(newOps);
+    } else if (sheetCount && config) {
+      const phaseName = Object.keys(config)[0];
+      const phaseConfig = config[phaseName];
+      const newOps = Object.keys(phaseConfig).map(opName => {
+        return {
+          name: opName,
+          role: 'C+H',
+          time: sheetCount * (phaseConfig[opName]['C+H'] || 0),
+          startTime: '08:00',
+        };
+      });
+
+      let cumulativeTime = 0;
+      newOps.forEach((op:any) => {
+        const totalMinutes = 8 * 60 + cumulativeTime;
+        const startHours = Math.floor(totalMinutes / 60);
+        const startMinutes = totalMinutes % 60;
+        op.startTime = `${String(startHours).padStart(2, '0')}:${String(startMinutes).padStart(2, '0')}`;
+        cumulativeTime += op.time;
+      });
+
+      setOperations(newOps);
     }
-  }, [data, config]);
+  }, [data, config, sheetCount]);
 
   const handleRoleChange = (index: number, role: string) => {
     const newOps = [...operations];
