@@ -1,0 +1,5 @@
+{
+  "name": "Carpentry Labor Estimator",
+  "description": "An application to estimate labor for carpentry projects, including design review, parts processing, and assembly phases.",
+  "requestFramePermissions": []
+}
